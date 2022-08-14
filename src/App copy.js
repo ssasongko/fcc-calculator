@@ -1,81 +1,135 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
-import ClearButton from './components/buttons/ClearButton'
 import NumberButton from './components/buttons/NumberButton'
 import OperationButton from './components/buttons/OperationButton'
 
 function App() {
-  const [value, setValue] = useState({num: 0, firstTime: true})
+  const [value, setValue] = useState(0)
   const [memory, setMemory] = useState(0)
   const [hint, setHint] = useState(null)
   const [operator, setOperator] = useState(null)
 
-  const [test, setTest] = useState("")
+  useEffect(() => {
+    console.log('memory ' + memory)
+  }, [memory])
+
+  useEffect(() => {
+    console.log('operator ' + operator)
+  }, [operator])
 
   const onAddNumberToDisplayHandler = (number) => {
-    if(Number(value.num) === 0){
-      if(Number(number) === 0) return setValue({...value, num: number})
-      return setValue({...value, num: number})
+    if(value.length === undefined){
+      return (Number(number) === 0) ? setValue(0) : setValue(number)
     }
-    
-    setValue(({...value, num: `${value.num}${number}`}))
+    setValue(`${value}${number}`)
+  }
+
+  const operation = (first, operator, second) => {
+    if (operator === "+") {
+      return (first + second)
+    }
+    else if (operator === "-") {
+      return (first - second)
+    }
+    else if (operator === "*") {
+      return (first * second)
+    }
+    else if (operator === "/") {
+      return (first / second)
+    }
+    return 0
   }
 
   const onOperationHandler = (operatorProp) => {
-    setOperator(operatorProp)
-    let firstNum = (value.firstTime && (operatorProp === '-' || operatorProp === '*') 
-      ? value.num 
-      : Number(memory))
-
-    let secondNum = (value.firstTime && operatorProp === '-') 
-      ? Number(memory) 
-      : (value.firstTime && (operatorProp === '*' || operatorProp === '/'))
-      ? 1
-      : Number(value.num)
-
-    setValue({num: 0, firstTime: false})
-
-
-    let total = operation(firstNum, secondNum, operatorProp)
-    
-    setHint(`${total} ${operatorProp} `)
-    setMemory(total)
-  }
-  
-  const operation = (first, second, operator) => {
-
-    switch(operator){
+    switch(operatorProp){
       case '+' :
-        return first + second
+        if(operator != null){
+          let t1 = operation(Number(memory), operator ,Number(value));
+          setMemory(t1);
+          // setHint(`${t1} + `)
+        }
+        else{
+          setMemory(Number(value))
+        }
+        setValue(0)
+        setOperator('+')
+        break
       case '-' :
-        return first - second
+        if(operator != null){
+          let t1 = operation(Number(memory), operator ,Number(value));
+          setMemory(t1);
+        }
+        else{
+          setMemory(Number(value))
+        }
+        setValue(0)
+        setOperator('-')
+        break
       case '*' :
-        return first * second
+        if(operator != null){
+          let t1 = operation(Number(memory), operator ,Number(value));
+          if(operatorProp === "-"){
+            t1 *= -1
+          }
+          setMemory(t1);
+          // setHint(`${t1} * `)
+        }
+        else{
+          setMemory(Number(value))
+        }
+        setValue(0)
+        setOperator('*')
+        break
       case '/' :
-        return first / second
+        if(operator != null){
+          let t1 = operation(Number(memory), operator ,Number(value));
+          setMemory(t1);
+          // setHint(`${t1} / `)
+        }
+        else{
+          setMemory(Number(value))
+        }
+        setValue(0)
+        setOperator('/')
+        break
       case '=' :
+        if(operator != null){
+          let t1 = operation(Number(memory), operator ,Number(value));
+          console.log('t1 adalah: ' + t1)
+          setValue(t1);
+        }
+        else{
+          return
+        }
+        setMemory(null)
+        setHint(null)
+        setOperator(null)
+        break
       default :
         return
     }
   }
 
+  const onAddDecimalToDisplayHandler = () => {
+    if(value.includes(".")) return
+    setValue(`${value}.`)
+  }
+
   const onClearHandler = () => {
-    setValue({num: 0, firstTime: true})
+    setValue(0)
     setHint(null)
     setMemory(0)
+    setFState(true)
   }
+
 
   return (
     <main className='bg-slate-500'>
       <section className='h-screen flex justify-center items-center'>
-        <div className='w-4/5 md:w-1/4 bg-white p-5'>
+        <div className='w-3/4 md:w-6/12 lg:w-1/4 bg-white p-5'>
           <div className='text-right basis-full bg-slate-400 py-2 px-4'>
-            <span>{hint}</span>
-            <br/>
-            {/* <span id="display">{value.num}</span> */}
-            
-            <input className="text-right" value={value.num}/>
-
+            <p>{(hint !== null) ? hint : " "}</p>
+            <input id="display" className="w-full p-2 text-right" value={value} onChange={(e) => setValue(e.target.value)}/>
           </div>
 
           <div className='grid grid-cols-4'>
@@ -99,7 +153,7 @@ function App() {
             <OperationButton handleClick={onOperationHandler} id="equals" text="="/>
 
             <NumberButton handleClick={onAddNumberToDisplayHandler} id="zero" text="0"/>
-            <NumberButton id="decimal" text="."/>
+            <NumberButton handleClick={onAddDecimalToDisplayHandler} id="decimal" text="."/>
           </div>
         </div>
       </section>
