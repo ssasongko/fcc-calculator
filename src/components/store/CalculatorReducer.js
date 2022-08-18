@@ -1,6 +1,6 @@
 const reducer = (state, action) => {
     
-    const { calculated, currentNum, operator } = state;
+    const { currentNum } = state;
 
     try{
         switch(action.type)
@@ -22,16 +22,14 @@ const reducer = (state, action) => {
                     return {...state}
                 }
 
-                let payload = action.payload
-                let x = currentNum + payload
-                let apatuh = x.slice(-3)
+                let text = currentNum + action.payload
+                let sliced = text.slice(-3)
                 
                 let regex = /[-+*]/gi
-                let matchRegex = apatuh.match(regex)
+                let matchRegex = sliced.match(regex)
                 
                 if(matchRegex !== null && matchRegex.length >= 3){
-                    let gakpaham = currentNum.slice(0, -2) + payload
-                    return {...state, currentNum: gakpaham}
+                    return {...state, currentNum: currentNum.slice(0, -2) + action.payload}
                 }
 
                 return {...state, currentNum: currentNum + action.payload}
@@ -50,7 +48,6 @@ const reducer = (state, action) => {
             }
 
             case 'PERFORM_EVALUATE': {
-                console.log(currentNum);
                 const total = eval(currentNum);
                 return {...state, currentNum: total, calculated: total}
             }

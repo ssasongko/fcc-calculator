@@ -116,25 +116,15 @@ const Calculator = () => {
   const { calculated, currentNum, captureClick} = useContext(CalculatorContext)
 
   useEffect(() => {
-    // let keys = []
-    //   labels.forEach((label) => {
-    //   keys.push(label.text)
-    // })
-
-    // document.addEventListener('keydown', (e) => {
-    //   let key = (e.key === "Enter")
-    //    ? '='
-    //    : (e.key === "Backspace")
-    //    ? 'delete'
-    //    : e.key
-      
-    //   if(keys.includes(key)){
-    //     captureClick(key)
-    //   }
-    //   else if(key === "delete"){
-    //     captureClick('delete')
-    //   }
-    // })    
+    toast.warn('Pass all test on Freecodecamp!, but the web apps still on development', {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    });
   }, [])
 
   return (
